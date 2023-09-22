@@ -24,7 +24,7 @@ const Header = () => {
                 ))}
               </ul>
             </div>
-            <div>
+            <div className="flex flex-wrap gap-10">
               <NavLink to={"/login"}>Login</NavLink>
               <NavLink to={"/signup"}>Signup</NavLink>
             </div>

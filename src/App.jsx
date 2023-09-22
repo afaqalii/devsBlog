@@ -6,6 +6,8 @@ import AddEditBlog from './pages/AddEditBlog'
 import PageNotFound from './pages/PageNotFound'
 import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
+import Login from './pages/login/Login'
+import Signup from './pages/Signup/Signup'
 
 function App() {
    const appRoutes = [
@@ -13,6 +15,8 @@ function App() {
     {path:'/details/:id', element:<Details/>},
     {path:'/create', element:<AddEditBlog/>},
     {path:'/update/:id', element:<AddEditBlog/>},
+    {path:'/login', element:<Login/>},
+    {path:'/signup', element:<Signup/>},
     {path:'*', element:<PageNotFound/>},
    ]
   return (
