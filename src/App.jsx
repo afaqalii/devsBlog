@@ -6,6 +6,7 @@ import AddEditBlog from './pages/AddEditBlog'
 import PageNotFound from './pages/PageNotFound'
 import { ToastContainer } from 'react-toastify'
 import Header from './components/Header'
+import AuthForm from './pages/Form/AuthForm'
 import Login from './pages/login/Login'
 import Signup from './pages/Signup/Signup'
 
