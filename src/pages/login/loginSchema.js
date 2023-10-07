@@ -2,7 +2,7 @@ import * as Yup from "yup";
 
 export const loginInitialValues = {
   email: "",
-  password: "",
+  password: "", 
 };
 
 export const loginValidationSchema = Yup.object().shape({

@@ -42,7 +42,7 @@ const Login = () => {
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form className="min-w-full w-[450px] mt-20 shadow px-5 py-10 rounded-2xl">
+          <Form className="min-w-full w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
             <h1 className="font-bold text-[30px] mt-1 mb-3 text-center">
               Devs Blogs
             </h1>
@@ -88,7 +88,7 @@ const Login = () => {
             <p className="mt-3 text-xs">
               Don't have an account?{" "}
               <span className="font-bold text-sm text-blue-500">
-                <Link to={"/signup"}>Signup</Link>
+                <Link to={"/signup"}>Sign up</Link>
               </span>
             </p>
           </Form>

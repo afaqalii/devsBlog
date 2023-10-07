@@ -3,22 +3,47 @@ import React from "react";
 import { signupValidation, signupInitialValues } from "./signupSchema";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth, provider } from "../../firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../Features/UserAuth/AuthSlice";
 const Signup = () => {
+  // components states
+  const dispatch = useDispatch();
+  const authState  = useSelector((state) => state.auth);
+
   //   function to run when form is submitted
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
     try {
-      // Handle login
-      console.log(values);
-      // Successfully authenticated
+      console.log(values); // Do something with form values
     } catch (error) {
       // Handle authentication errors
+      console.error(error);
       setFieldError("name", "Invalid input");
       setFieldError("email", "Invalid email or password");
-      setFieldError("password", "Invalid email or password");
+      setFieldError("password", "Invalid email or password"); // Display the error message
     } finally {
       setSubmitting(false);
     }
   };
+  // sign up with gooogle popup
+  const handleGoogleSignup = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // console.log("user", user);
+        // ...
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        console.log(error)
+      });
+  };
+  console.log("redux state",authState)
   const fields = [
     {
       name: "name",
@@ -47,7 +72,7 @@ const Signup = () => {
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form className="min-w-full w-[450px] mt-20 shadow px-5 py-10 rounded-2xl">
+          <Form className="min-w-full w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
             <h1 className="font-bold text-[30px] mt-1 mb-3 text-center">
               Devs Blogs
             </h1>
@@ -79,14 +104,17 @@ const Signup = () => {
               }`}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Loading..." : "Signup"}
+              {isSubmitting ? "Loading..." : "Sign up"}
             </button>
             <div className="flex items-center w-full justify-between mt-3">
               <span className="w-[45%] bg-black h-[1px]"></span>
               <span>OR</span>
               <span className="w-[45%] bg-black h-[1px]"></span>
             </div>
-            <div className="cursor-pointer flex items-center justify-center rounded-[5px] border-black border-[1px] border-solid py-[5px] w-full mt-2 gap-[5px]">
+            <div
+              onClick={handleGoogleSignup}
+              className="cursor-pointer flex items-center justify-center rounded-[5px] border-black border-[1px] border-solid py-[5px] w-full mt-2 gap-[5px]"
+            >
               <FcGoogle style={{ fontSize: "30px" }} />
               <p>Signup with google account</p>
             </div>

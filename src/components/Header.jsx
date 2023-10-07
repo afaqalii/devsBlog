@@ -18,7 +18,7 @@ const Header = () => {
             <div className="hidden lg:block">
               <ul className="flex gap-10 navbar-nav me-auto md-2 md-lg-0">
                 {navItems.map((item) => (
-                  <NavLink to={item.path}>
+                  <NavLink key={item.path} to={item.path}>
                     <li className="capitalize">{item.name}</li>
                   </NavLink>
                 ))}
@@ -26,7 +26,7 @@ const Header = () => {
             </div>
             <div className="flex flex-wrap gap-10">
               <NavLink to={"/login"}>Login</NavLink>
-              <NavLink to={"/signup"}>Signup</NavLink>
+              <NavLink to={"/signup"}>Sign up</NavLink>
             </div>
           </nav>
         </div>
