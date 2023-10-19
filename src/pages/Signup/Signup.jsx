@@ -1,31 +1,42 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React from "react";
 import { signupValidation, signupInitialValues } from "./signupSchema";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth, provider } from "../../firebase";
+import { signInWithPopup, GoogleAuthProvider,createUserWithEmailAndPassword } from "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
+import { ref, set } from "firebase/database";
+import { auth, db, dbRef, provider } from "../../firebase";
 import { login } from "../../Features/UserAuth/AuthSlice";
 const Signup = () => {
   // components states
   const dispatch = useDispatch();
-  const authState  = useSelector((state) => state.auth);
+  const navigate = useNavigate()
 
-  //   function to run when form is submitted
-  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
-    try {
-      console.log(values); // Do something with form values
-    } catch (error) {
-      // Handle authentication errors
-      console.error(error);
-      setFieldError("name", "Invalid input");
-      setFieldError("email", "Invalid email or password");
-      setFieldError("password", "Invalid email or password"); // Display the error message
-    } finally {
-      setSubmitting(false);
+ // function to run when form is submitted
+ const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
+  try {
+    // Sign up with email and password
+    const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+    const user = userCredential.user;
+    if (user) {
+      // Update the user's profile (optional)
+      await set(ref(db, `users/${user.uid}`), {
+        username: values.name,
+        email: user.email,
+      });
+
+      dispatch(login(user));
+      navigate("/");
     }
-  };
+  } catch (error) {
+    console.error(error);
+    setFieldError("email", "Invalid email or email already in use"); // Display the error message
+  } finally {
+    setSubmitting(false);
+  }
+};
+
   // sign up with gooogle popup
   const handleGoogleSignup = () => {
     signInWithPopup(auth, provider)
@@ -35,15 +46,37 @@ const Signup = () => {
         const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
-        // console.log("user", user);
-        // ...
+        dispatch(login(user))
+        if (user) {
+          set(dbRef(`users/${user.uid}`), {
+            username: user.displayName,
+            email: user.email,
+            profile_picture: user.photoURL,
+          })
+            .then(() => {
+              console.log("succes");
+              navigate("/");
+            })
+            .catch((err) => console.log("Failure", err));
+        }
       })
       .catch((error) => {
         // Handle Errors here.
-        console.log(error)
+        console.log(error);
       });
   };
-  console.log("redux state",authState)
+
+  // const sendDataToDatabase = () => {
+  //   // Reference to a specific location (path) in the Realtime Database
+  //   set(dbRef("users/afaq"), {
+  //     username: "name",
+  //     email: "email",
+  //     profile_picture: "imageUrl",
+  //   })
+  //     .then(() => console.log("Succes"))
+  //     .catch((err) => console.log("Failure"));
+  // };
+
   const fields = [
     {
       name: "name",
@@ -65,14 +98,15 @@ const Signup = () => {
     },
   ];
   return (
-    <div className="grid place-content-center">
+    <div className="flex items-center justify-center">
+      {/* <button onClick={sendDataToDatabase}>Send to DB</button> */}
       <Formik
         initialValues={signupInitialValues}
         validationSchema={signupValidation}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form className="min-w-full w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
+          <Form className="max-[480px]:min-w-full w-[450px] max-w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
             <h1 className="font-bold text-[30px] mt-1 mb-3 text-center">
               Devs Blogs
             </h1>

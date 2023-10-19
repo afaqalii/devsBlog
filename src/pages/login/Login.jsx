@@ -1,11 +1,19 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React from "react";
 import { loginInitialValues, loginValidationSchema } from "./loginSchema";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import { login } from "../../Features/UserAuth/AuthSlice";
+import { auth, dbRef, provider } from "../../firebase";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { set } from "firebase/database";
 
 
 const Login = () => {
+  // states for this component 
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   //   function to run when form is submitted
   const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
     try {
@@ -20,6 +28,36 @@ const Login = () => {
       setSubmitting(false);
     }
   };
+
+   // sign up with gooogle popup
+   const handleGoogleSignIn = () => {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const credential = GoogleAuthProvider.credentialFromResult(result);
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        dispatch(login(user))
+        if (user) {
+          set(dbRef(`users/${user.uid}`), {
+            username: user.displayName,
+            email: user.email,
+            profile_picture: user.photoURL,
+          })
+            .then(() => {
+              console.log("succes");
+              navigate("/");
+            })
+            .catch((err) => console.log("Failure", err));
+        }
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        console.log(error);
+      });
+  };
+
   const fields = [
     {
       name: "email",
@@ -35,14 +73,14 @@ const Login = () => {
     },
   ];
   return (
-    <div className="grid place-content-center">
+    <div className="flex items-center justify-center">
       <Formik
         initialValues={loginInitialValues}
         validationSchema={loginValidationSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting }) => (
-          <Form className="min-w-full w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
+          <Form className="max-[480px]:min-w-full w-[450px] max-w-[450px] my-20 shadow px-5 py-10 rounded-2xl">
             <h1 className="font-bold text-[30px] mt-1 mb-3 text-center">
               Devs Blogs
             </h1>
@@ -81,7 +119,7 @@ const Login = () => {
               <span>OR</span>
               <span className="w-[45%] bg-black h-[1px]"></span>
             </div>
-            <div className="cursor-pointer flex items-center justify-center rounded-[5px] border-black border-[1px] border-solid py-[5px] w-full mt-2 gap-[5px]">
+            <div onClick={handleGoogleSignIn} className="cursor-pointer flex items-center justify-center rounded-[5px] border-black border-[1px] border-solid py-[5px] w-full mt-2 gap-[5px]">
               <FcGoogle style={{ fontSize: "30px" }} />
               <p>Login with google account</p>
             </div>

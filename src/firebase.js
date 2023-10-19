@@ -1,19 +1,23 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth } from "firebase/auth";
+import { getDatabase, ref } from "firebase/database";
+import {getAuth, GoogleAuthProvider } from "firebase/auth"
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCKkTWG8TKiNY3yq7YOIzQmp5J5cjerjQ4",
-  authDomain: "devsblog-34799.firebaseapp.com",
-  projectId: "devsblog-34799",
-  storageBucket: "devsblog-34799.appspot.com",
-  messagingSenderId: "82878217950",
-  appId: "1:82878217950:web:8068b83aa59ec0a3f3cc4f",
-  measurementId: "G-PNCE567Y7F"
+  apiKey: "AIzaSyAXZNzZ9c3UMkmU6s8xucVGt7JjwUB7MpA",
+  authDomain: "blog-app-561c8.firebaseapp.com",
+  projectId: "blog-app-561c8",
+  storageBucket: "blog-app-561c8.appspot.com",
+  messagingSenderId: "697691826380",
+  appId: "1:697691826380:web:22990525360b22e6ff7a69",
+  measurementId: "G-P3KY7S1KFP"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
-export const provider = new GoogleAuthProvider(); 
+export const db = getDatabase(app)
+export const provider = new GoogleAuthProvider();
+export const dbRef = (path) => {
+  return ref(db, path)
+}
